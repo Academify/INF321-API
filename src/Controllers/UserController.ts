@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
+import {UserRepository} from '../Repository/UserRepository';
 import { User } from "../Entity/User";
 
 export class UserController{
+
+  private _userRepository = new UserRepository();
+
   public async index(req: Request, res: Response) : Promise<Response> {
     try {
       //Get all users
-      const users = new Array<User>();
+      
+      const users = await this._userRepository.getAll();
       return res.status(200).json({users: users});
     } catch (error: any) {
       throw Error('Não foi possível reucuperar os usuários')

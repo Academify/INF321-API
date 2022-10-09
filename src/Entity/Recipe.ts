@@ -8,8 +8,6 @@ export class Recipe{
   private ingredients: Array<Ingredient> = [];
   private preparation: Array<Step> = [];
   private preparationTime: number = 0;
-  private createdAt: Date = new Date();
-  private updatedAt: Date = new Date();
 
   constructor(id?: number, title?: string, description?: string, ingredients?: Array<any>, preparation?: Array<any>, preparationTime?: number){
     if(id != undefined && title != undefined && description != undefined && ingredients != undefined && preparation != undefined && preparationTime != undefined){
