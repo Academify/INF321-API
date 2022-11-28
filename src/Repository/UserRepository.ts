@@ -1,45 +1,42 @@
 import { User } from '../Entity/User';
-import getConnection from './Connection';
-import { Client } from 'pg';
+import { Connection } from './Connection';
 
 export class UserRepository{
 
   private conn: any = {};
 
   constructor(){
-    new Promise(resolve => {
-      setTimeout(() => {
-        resolve(this.conn = getConnection());
-      }, 1000);
-    });
+    this.conn = new Connection();
   }
 
   public async getAll() : Promise<Array<User>>{
-    this.conn.connect();
-    const users = await this.conn.query('SELECT * FROM users');
-    this.conn.end();
-    return users;
+    
+    const client = await this.conn.connect();
+    const users = await client.query('SELECT * FROM users');
+    client.end();
+    return users.rows;
   }
 
   public async getById(id: number) : Promise<User>{
-    this.conn.connect();
-    const user = await this.conn.query('SELECT * FROM users WHERE id = $1', [id]);
-    this.conn.end();
-    return user;
+    const client = await this.conn.connect();
+    const user = await client.query('SELECT * FROM users WHERE id = $1', [id]);
+    client.end();
+    return user.rows[0];
   }
 
-  public async create(user: User) : Promise<User>{
-    this.conn.connect();
-    const newUser = await this.conn.query('INSERT INTO users (name, email) VALUES ($1, $2)', [user.getName, user.getEmail, user.getPassword]).returning('*');
-    this.conn.end();
-    return newUser;
+  public async create(user: User) : Promise<User>{  
+    const client = await this.conn.connect();    
+    await client.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3)', [user.getName(), user.getEmail(), user.getPassword()]);
+    const userCreated = await client.query('SELECT * FROM users WHERE email = $1', [user.getEmail()]);
+    client.end();
+    return userCreated.rows[0];
   }
   
   public async update(user: User) : Promise<User>{
-    this.conn.connect();
-    const updatedUser = await this.conn.query('UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4', [user.getName, user.getEmail, user.getPassword, user.getId]).returning('*');
-    this.conn.end();
-    return updatedUser;
+    const client = await this.conn.connect(); 
+    await client.query('UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4', [user.getName, user.getEmail, user.getPassword, user.getId]);
+    client.end();
+    return await this.getById(user.getId());
   }
 
   public async delete(id: number) : Promise<void>{

@@ -4,13 +4,19 @@ import { User } from "../Entity/User";
 
 export class UserController{
 
-  private _userRepository = new UserRepository();
+  private _userRepository: UserRepository = new UserRepository();
+
+  constructor() {
+    this._userRepository = new UserRepository();
+  }
 
   public async index(req: Request, res: Response) : Promise<Response> {
     try {
       //Get all users
+      const ur: UserRepository = new UserRepository();
+
+      const users = await ur.getAll();
       
-      const users = await this._userRepository.getAll();
       return res.status(200).json({users: users});
     } catch (error: any) {
       throw Error('Não foi possível reucuperar os usuários')
@@ -20,7 +26,8 @@ export class UserController{
   public async show(req: Request, res: Response) : Promise<Response> {
     try {
       //Get user by id
-      const user = new User();
+      const ur: UserRepository = new UserRepository();
+      const user = await ur.getById((req.params.id as unknown) as number);
       return res.status(200).json({user: user});
     } catch (error: any) {
       throw Error('Não foi possível reucuperar o usuário')
@@ -30,7 +37,9 @@ export class UserController{
   public async store(req: Request, res: Response) : Promise<Response> {
     try {
       //Create user
-      return res.status(200).json({message: "User created"});
+      const ur: UserRepository = new UserRepository();
+      const user = await ur.create(new User(req.body.name, req.body.email, req.body.password));
+      return res.status(200).json({user: user});
     } catch (error: any) {
       throw new Error("Não foi possível criar o usuário");
       
@@ -40,8 +49,11 @@ export class UserController{
   public async update(req: Request, res: Response) : Promise<Response> {
     try {
       //Update user
-      return res.status(200).json({message: "User updated"}); 
+      const ur: UserRepository = new UserRepository();
+      const user = await ur.update(new User(req.body.name, req.body.email, req.body.password, (req.params.id as unknown) as number));
+      return res.status(200).json({message: user}); 
     } catch (error: any) {
+      console.log(error);
       throw new Error("Não foi possível atualizar o usuário");
     }
   }

@@ -4,7 +4,7 @@ export class User{
   private email: string = "";
   private password: string = "";
 
-  constructor(id?: number, name?: string, email?: string, password?: string){
+  constructor(name?: string, email?: string, password?: string, id: number = 0){
     if(id != undefined && name != undefined && email != undefined && password != undefined){
       this.id = id;
       this.name = name;
