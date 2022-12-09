@@ -1,5 +1,6 @@
 import { User } from '../Entity/User';
 import { Connection } from './Connection';
+import { RecipeRepository } from './RecipeRepository';
 
 export class UserRepository{
 
@@ -30,18 +31,25 @@ export class UserRepository{
     const userCreated = await client.query('SELECT * FROM users WHERE email = $1', [user.getEmail()]);
     client.end();
     return userCreated.rows[0];
+
   }
   
   public async update(user: User) : Promise<User>{
-    const client = await this.conn.connect(); 
-    await client.query('UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4', [user.getName, user.getEmail, user.getPassword, user.getId]);
+    const client = await this.conn.connect();
+    await client.query('UPDATE users SET name = $1, email = $2, password = $3 WHERE id = $4', [user.getName(), user.getEmail(), user.getPassword(), user.getId()]);
+    const userCreated = await client.query('SELECT * FROM users WHERE email = $1 and name = $2', [user.getEmail(), user.getName()]);
     client.end();
-    return await this.getById(user.getId());
+    return userCreated.rows[0];
   }
 
   public async delete(id: number) : Promise<void>{
-    this.conn.connect();
-    const deletedUser = await this.conn.query('DELETE FROM users WHERE id = $1', [id]);
-    this.conn.end();
+    const client = await this.conn.connect();
+
+    const rr: RecipeRepository = new RecipeRepository();
+    rr.delete(id);
+    
+    await client.query('DELETE FROM users WHERE id = $1', [id]);
+    client.end();
+    return;
   }
 }

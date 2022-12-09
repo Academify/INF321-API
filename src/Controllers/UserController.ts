@@ -53,7 +53,6 @@ export class UserController{
       const user = await ur.update(new User(req.body.name, req.body.email, req.body.password, (req.params.id as unknown) as number));
       return res.status(200).json({message: user}); 
     } catch (error: any) {
-      console.log(error);
       throw new Error("Não foi possível atualizar o usuário");
     }
   }
@@ -61,8 +60,12 @@ export class UserController{
   public async delete(req: Request, res: Response) : Promise<Response> {
     try {
       //Delete user
+      const id = (req.params.id as unknown) as number;
+      const ur: UserRepository = new UserRepository();
+      await ur.delete(id);
       return res.status(200).json({message: "User deleted"}); 
     } catch (error: any) {
+      console.log(error);
       throw new Error("Não foi possível deletar o usuário");
     }  
   }
