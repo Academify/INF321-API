@@ -5,7 +5,7 @@ export class Ingredient{
   private quantity : number = 0;
   private unit : string = "";
 
-  constructor(id?: number, recipeId?: number, name?: string, quantity?: number, unit?: string){
+  constructor(recipeId?: number, name?: string, quantity?: number, unit?: string, id: number = 0){
     if(id != undefined && recipeId != undefined && name != undefined && quantity != undefined && unit != undefined){
       this.id = id;
       this.recipeId = recipeId;

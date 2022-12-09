@@ -4,7 +4,7 @@ export class Step{
   private stepNumber : number = 0;
   private description : string = "";
 
-  constructor(id?: number, recipeId?: number, stepNumber?: number, description?: string){
+  constructor(recipeId?: number, stepNumber?: number, description?: string, id: number = 0){
     if(id != undefined && recipeId != undefined && stepNumber != undefined && description != undefined){
       this.id = id;
       this.recipeId = recipeId;
