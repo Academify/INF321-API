@@ -10,7 +10,7 @@ export class RecipeRepository{
     this.conn = new Connection();
   }
 
-  public async getAll() : Promise<Array<User>>{
+  public async getAll() : Promise<Array<Recipe>>{
     
     const client = await this.conn.connect();
     const recipes = await client.query('SELECT * FROM recipes');

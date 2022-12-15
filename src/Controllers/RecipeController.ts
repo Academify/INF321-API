@@ -8,7 +8,19 @@ export class RecipeController {
       //Chama o Repository de receitas
       const rr: RecipeRepository = new RecipeRepository();
       const recipes = await rr.getAll();
-      return res.json({ recipes: recipes });
+      let result: Array<Recipe> = new Array<Recipe>();
+
+      recipes.forEach(item => {
+        let recipe:Recipe = new Recipe();
+        recipe.setId(Number(item[0]));
+        recipe.setTitle(item[1]);
+        recipe.setDescription(item[2]);
+        recipe.setPreparationTime(Number(item[3]));
+        recipe.setUserId(Number(item[4]));
+        result.push(recipe);
+      });
+
+      return res.json(result);
     } catch (error:any) {
       throw Error('Não foi possível recuperar as receitas');
     }
